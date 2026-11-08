@@ -25,7 +25,8 @@ jobs:
         run: python3 scripts/validate.py
 
   package:
-    name: package
+    # The check name is required by the repository ruleset: keep it as 'pack'.
+    name: pack
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
