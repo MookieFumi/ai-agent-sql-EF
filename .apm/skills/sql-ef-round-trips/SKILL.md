@@ -38,4 +38,4 @@ Enable `Microsoft.EntityFrameworkCore.Database.Command` at Information. Group th
 
 Report commands per request before and after. Row counts and command counts are deterministic; timings are not, so quote orders of magnitude.
 
-Read `references/blog-posts.md` of the report skill for the long explanations.
+The long explanations are listed in the references folder of the `sql-ef-report` skill.
