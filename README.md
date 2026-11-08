@@ -49,6 +49,8 @@ Copy every folder under `.apm/skills/` to the skills folder of your tool. Each f
 
 In VS Code enable the agent skills setting (`chat.agent.skills`). Then open a .NET repository and ask: "run sql-ef-analyst, full run", or paste an EF log or an execution plan.
 
+See `docs/testing-guide.md` to try it against `ef-core-pills`.
+
 ## Releasing
 
 1. Bump `version` in `apm.yml`.
