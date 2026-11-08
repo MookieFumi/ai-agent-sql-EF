@@ -1,0 +1,17 @@
+name: ai-agent-sql-ef
+version: "0.1.0"
+description: Skills and agent to find SQL and EF Core performance problems (N+1, round trips, tracking, projections, indexes).
+author: MookieFumi
+license: MIT
+repository: https://github.com/MookieFumi/ai-agent-sql-ef
+keywords:
+  - dotnet
+  - efcore
+  - sql
+  - performance
+targets:
+  - copilot
+  - claude
+  - cursor
+  - codex
+  - gemini

@@ -1,0 +1,68 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: validate and pack only, do not create a GitHub Release"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Read version from apm.yml
+        run: |
+          version="$(grep -E '^version:' apm.yml | sed -E 's/version:\s*"?([^"]+)"?/\1/')"
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
+
+      - name: Check tag matches apm.yml version
+        if: github.ref_type == 'tag'
+        run: |
+          if [ "v${VERSION}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match apm.yml version v${VERSION}"
+            exit 1
+          fi
+
+      - name: Validate
+        run: python3 scripts/validate.py
+
+      - name: Install APM
+        run: pip install apm-cli
+
+      - name: Smoke test, install the package into an empty project
+        run: ./scripts/smoke-install.sh
+
+      - name: Build package
+        run: python3 scripts/build-package.py
+
+      - name: Read package name and version
+        run: |
+          name="$(grep -E '^name:' apm.yml | sed -E 's/name:\s*"?([^"]+)"?/\1/')"
+          version="$(grep -E '^version:' apm.yml | sed -E 's/version:\s*"?([^"]+)"?/\1/')"
+          echo "PACKAGE_NAME=${name}-${version}" >> "$GITHUB_ENV"
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGE_NAME }}
+          path: dist/*.zip
+
+      - name: Create GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "${GITHUB_REF_NAME}" ./dist/*.zip --generate-notes
