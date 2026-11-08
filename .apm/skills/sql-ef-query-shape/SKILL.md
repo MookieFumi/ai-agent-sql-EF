@@ -15,7 +15,7 @@ description: Stage 3 of sql-ef-analyst. Detect queries with the wrong shape in E
 | List query without `Take` | Fine with 200 rows, breaks with millions | Add a limit and pagination |
 | `Skip`/`Take` with deep pages | The database still walks the skipped rows | Keyset pagination |
 | `OrderBy` on a non-unique column with paging | Rows repeat or disappear between pages | Add a unique tie-breaker such as the id |
-| `Count() > 0` | Can count more than needed | `Any()` (often the same plan; check the plan) |
+| `Count() > 0` | Can count more than needed | `Any()`. Report as Low: in many cases the plan is the same, so ask for the plan before calling it a defect |
 | Custom C# method inside a `Where` or `Select` | Client evaluation or runtime exception | Translate to expressions or move after the query |
 | `Contains` with a huge list | Huge parameter list, plan cache pollution | Chunk, or use a temp table or join |
 
@@ -25,6 +25,7 @@ description: Stage 3 of sql-ef-analyst. Detect queries with the wrong shape in E
 
 ## Rules
 
+- Before reporting a cartesian explosion, check the options applied to the same query (`AsSplitQuery`, `AsSingleQuery`, a global `UseQuerySplittingBehavior`). A toggled option means the finding is Possible.
 - `AsSplitQuery` adds round trips and the data can change between statements. Measure both shapes and mention the trade-off.
 - Do not change a query shape if the table is small and will stay small. Say so.
 
