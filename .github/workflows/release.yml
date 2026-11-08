@@ -1,0 +1,53 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check tag matches apm.yml version
+        run: |
+          version="$(grep -E '^version:' apm.yml | sed -E 's/version:\s*"?([^"]+)"?/\1/')"
+          if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match apm.yml version v${version}"
+            exit 1
+          fi
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
+
+      - name: Install APM
+        run: pip install apm-cli
+
+      - name: Pack
+        run: apm pack --archive -o ./dist
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "${GITHUB_REF_NAME}" ./dist/*.zip --generate-notes
+
+      - name: Install ORAS
+        uses: oras-project/setup-oras@v1
+
+      - name: Push OCI artifact to GitHub Packages
+        run: |
+          repo="ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+          cd dist
+          for f in *.zip; do
+            oras push "${repo}:${VERSION}" "${f}:application/zip"
+            oras push "${repo}:latest" "${f}:application/zip"
+          done
