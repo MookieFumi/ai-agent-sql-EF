@@ -15,8 +15,9 @@ Know what evidence exists before analyzing. This stage writes nothing.
 2. List every `DbContext`, its `OnModelCreating` or `IEntityTypeConfiguration<>` classes, and the `UseXxx` provider call. Note `UseLazyLoadingProxies`, `UseQueryTrackingBehavior`, `AddDbContextPool` and `EnableSensitiveDataLogging`.
 3. Count query sites: `.ToList`, `.ToListAsync`, `.FirstOrDefault*`, `.Single*`, `.Any*`, `.Count*`, `.SaveChanges*`, `FromSql*`, `ExecuteSql*`, `ExecuteUpdate*`, `ExecuteDelete*`.
 4. Check whether SQL logging is available: `LogTo`, `ILogger` category `Microsoft.EntityFrameworkCore.Database.Command`, OpenTelemetry. Say how to enable it if missing.
-5. Look for a pasted log or execution plan from the user, and for existing indexes in migrations.
-6. Ask the user: approximate table sizes, the endpoints or jobs they care about, and which database they use in production.
+5. Detect an Aspire AppHost and service defaults. If present, recommend `sql-ef-aspire-telemetry` as the way to get logs and traces.
+6. Look for a pasted log or execution plan from the user, and for existing indexes in migrations.
+7. Ask the user: approximate table sizes, the endpoints or jobs they care about, and which database they use in production.
 
 ## Output
 

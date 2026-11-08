@@ -25,6 +25,7 @@ When a stage starts, load its skill and follow it. If the skill is not loaded au
 | # | Stage | Skill | Evidence |
 |---|---|---|---|
 | 1 | Diagnosis | `sql-ef-diagnosis` | Repository |
+| 1b | Aspire telemetry (when an AppHost exists) | `sql-ef-aspire-telemetry` | Aspire logs and traces |
 | 2 | Round trips | `sql-ef-round-trips` | Code, EF log |
 | 3 | Query shape | `sql-ef-query-shape` | Code, generated SQL |
 | 4 | Tracking and context | `sql-ef-tracking` | Code |
@@ -32,7 +33,7 @@ When a stage starts, load its skill and follow it. If the skill is not loaded au
 | 6 | Raw SQL | `sql-ef-raw-sql` | Code, SQL files |
 | 7 | Report | `sql-ef-report` | Every stage run |
 
-Stages 1 and 7 always run. Stages 2 to 6 run according to the evidence available and the user's focus.
+Stages 1 and 7 always run. Stage 1b runs when the repository uses Aspire and the user agrees to read or enable telemetry. Stages 2 to 6 run according to the evidence available and the user's focus.
 
 # Flow
 

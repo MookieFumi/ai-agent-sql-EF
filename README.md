@@ -10,6 +10,7 @@ apm.yml                        APM manifest (name, version, targets)
 ├── skills/                    portable skills (Agent Skills open standard)
 │   ├── sql-ef-analyst/        orchestrator
 │   ├── sql-ef-diagnosis/      stage 1
+│   ├── sql-ef-aspire-telemetry/ stage 1b (Aspire apps)
 │   ├── sql-ef-round-trips/    stage 2
 │   ├── sql-ef-query-shape/    stage 3
 │   ├── sql-ef-tracking/       stage 4
@@ -19,7 +20,7 @@ apm.yml                        APM manifest (name, version, targets)
 └── agents/
     └── sql-ef-analyst.agent.md   thin wrapper that loads the orchestrator skill
 AGENTS.md                      rules for agents working on this repo
-.github/workflows/release.yml  pack, GitHub Release and GitHub Packages
+X
 ```
 
 The skills hold all the logic and follow the Agent Skills open standard, so they work in any editor that supports it. The agent file only loads the `sql-ef-analyst` skill.
@@ -32,7 +33,7 @@ apm install MookieFumi/ai-agent-sql-ef#v0.1.0
 
 APM deploys the skills and the agent to the folders of your editor (`.github/`, `.claude/`, `.cursor/`, `.codex/`, `.gemini/`) according to `targets`. Use `--target <name>` to pick one.
 
-Each release also attaches a zip built with `apm pack --archive`, installable with `apm install ./ai-agent-sql-ef-0.1.0.zip`, and publishes the same zip as an OCI artifact in GitHub Packages (`ghcr.io/mookiefumi/ai-agent-sql-ef`). APM does not install from GitHub Packages; that copy is for downloading with `oras pull`.
+Each release also attaches a zip built with `apm pack --archive`, installable with `apm install ./ai-agent-sql-ef-0.1.0.zip`.
 
 ## Install without APM
 
@@ -58,8 +59,9 @@ The paths and the APM commands come from the documentation and have not been run
 ## Evidence it uses
 
 1. Code: static patterns in LINQ and SQL.
-2. EF Core logs (`Microsoft.EntityFrameworkCore.Database.Command`): commands per request and repeated statements.
-3. Execution plans you paste. The agent never connects to a database.
+2. Aspire telemetry: structured logs and traces of a running AppHost, read with the Aspire CLI or MCP server. The agent can propose a temporary change to enable EF command logging.
+3. EF Core logs (`Microsoft.EntityFrameworkCore.Database.Command`): commands per request and repeated statements.
+4. Execution plans you paste. The agent never connects to a database.
 
 ## Safety
 

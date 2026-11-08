@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
   release:
@@ -38,16 +37,3 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create "${GITHUB_REF_NAME}" ./dist/*.zip --generate-notes
-
-      - name: Install ORAS
-        uses: oras-project/setup-oras@v1
-
-      - name: Push OCI artifact to GitHub Packages
-        run: |
-          repo="ghcr.io/${GITHUB_REPOSITORY,,}"
-          echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
-          cd dist
-          for f in *.zip; do
-            oras push "${repo}:${VERSION}" "${f}:application/zip"
-            oras push "${repo}:latest" "${f}:application/zip"
-          done
