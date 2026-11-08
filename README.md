@@ -56,7 +56,7 @@ See `docs/testing-guide.md` to try it against `ef-core-pills`.
 ## Pipelines
 
 - `ci.yml` runs on every pull request and on `main`. Job `build` runs `scripts/validate.py` (skill names match their folders, front matter is valid, no editor-specific tool names, the agent only references existing skills). Job `pack` runs `apm pack --archive` and uploads the zip as an artifact.
-- `release.yml` runs when a `v*` tag is pushed: validates, packs and creates the GitHub Release with the zip.
+- `release.yml` runs when a `v*` tag is pushed: validates, packs and creates the GitHub Release with the zip. It can also be started by hand from the Actions tab (`Run workflow`); a manual run never creates a Release, it only validates and packs and uploads the zip as an artifact, so you can test it safely.
 
 Run the validation locally with `python3 scripts/validate.py`.
 

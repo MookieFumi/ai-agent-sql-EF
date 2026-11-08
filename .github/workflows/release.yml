@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: validate and pack only, do not create a GitHub Release"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -18,14 +24,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Check tag matches apm.yml version
+      - name: Read version from apm.yml
         run: |
           version="$(grep -E '^version:' apm.yml | sed -E 's/version:\s*"?([^"]+)"?/\1/')"
-          if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
-            echo "Tag ${GITHUB_REF_NAME} does not match apm.yml version v${version}"
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
+
+      - name: Check tag matches apm.yml version
+        if: github.ref_type == 'tag'
+        run: |
+          if [ "v${VERSION}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match apm.yml version v${VERSION}"
             exit 1
           fi
-          echo "VERSION=${version}" >> "$GITHUB_ENV"
 
       - name: Validate
         run: python3 scripts/validate.py
@@ -36,7 +46,14 @@ jobs:
       - name: Pack
         run: apm pack --archive -o ./dist
 
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: dist/*.zip
+
       - name: Create GitHub release
+        if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create "${GITHUB_REF_NAME}" ./dist/*.zip --generate-notes
