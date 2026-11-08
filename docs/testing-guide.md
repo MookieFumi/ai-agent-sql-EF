@@ -23,7 +23,7 @@ git status --short
 
 Fallback if APM fails or you do not want it: copy `.apm/skills/*` by hand into `.github/skills/` (VS Code) or `.claude/skills/` (Claude Code), keeping each folder name, and `.apm/agents/sql-ef-analyst.agent.md` into `.github/agents/`.
 
-VS Code: enable the agent skills setting (`chat.agent.skills`), open Copilot Chat in agent mode and check that the skills appear in the tools picker. Claude Code: run `/skills` or start a new session and check that the `sql-ef-*` skills are listed. The logic lives in the skills, so they are enough in both editors; the agent file is only an optional shortcut for VS Code.
+VS Code: enable the agent skills setting (`chat.agent.skills`), open Copilot Chat in agent mode and check that the skills appear in the tools picker. Claude Code: run `/skills` or start a new session and check that the `sql-ef-*` skills are listed. The logic lives in the skills. APM also deploys the thin agent wrapper: `.github/agents/sql-ef-analyst.agent.md` for VS Code and `.claude/agents/sql-ef-analyst.md` for Claude Code (confirmed in CI; whether Claude Code accepts the converted file is part of this test, note it).
 
 ## 2. Prompts to run
 
