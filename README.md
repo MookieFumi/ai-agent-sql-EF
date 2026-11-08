@@ -5,25 +5,40 @@ A GitHub Copilot custom agent for VS Code, with one skill per analysis, that fin
 ## Contents
 
 ```text
+skills/                        portable (Agent Skills open standard)
+├── sql-ef-analyst/            orchestrator
+├── sql-ef-diagnosis/          stage 1
+├── sql-ef-round-trips/        stage 2
+├── sql-ef-query-shape/        stage 3
+├── sql-ef-tracking/           stage 4
+├── sql-ef-indexes-plans/      stage 5
+├── sql-ef-raw-sql/            stage 6
+└── sql-ef-report/             stage 7 (+ references)
 agents/
-└── sql-ef-analyst.agent.md   orchestrator
-skills/
-├── sql-ef-diagnosis/         stage 1
-├── sql-ef-round-trips/       stage 2
-├── sql-ef-query-shape/       stage 3
-├── sql-ef-tracking/          stage 4
-├── sql-ef-indexes-plans/     stage 5
-├── sql-ef-raw-sql/           stage 6
-└── sql-ef-report/            stage 7 (+ references)
+├── vscode/sql-ef-analyst.agent.md   thin wrapper for VS Code custom agents
+└── claude/sql-ef-analyst.md         thin wrapper for Claude Code subagents
+AGENTS.md                      rules for agents working on this repo
 ```
+
+The skills hold all the logic and work in any editor that supports Agent Skills. The agent files only load the `sql-ef-analyst` skill, so they are optional.
 
 ## Install
 
-1. Copy `agents/sql-ef-analyst.agent.md` to your VS Code user agents folder.
-2. Copy every folder under `skills/` to your personal skills folder (`~/.copilot/skills/`). Each folder name must match the `name` in its `SKILL.md`.
-3. Open a .NET repository, select `sql-ef-analyst` and ask for a "full run", or paste an EF log or an execution plan.
+Copy every folder under `skills/` to the skills folder of your tool. Each folder name must match the `name` in its `SKILL.md`.
 
-Folder locations and settings were not verified against your VS Code version.
+| Tool | Project path | Personal path |
+|---|---|---|
+| VS Code / GitHub Copilot | `.github/skills/` (also reads `.claude/skills/` and `.agents/skills/`) | `~/.copilot/skills/` |
+| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
+| Codex CLI | `.codex/skills/` | `~/.codex/skills/` |
+| Cursor | `.cursor/skills/` | |
+| Gemini CLI | `.gemini/skills/` | |
+
+Optional agent wrappers: copy `agents/vscode/sql-ef-analyst.agent.md` to your VS Code agents folder, or `agents/claude/sql-ef-analyst.md` to `.claude/agents/`.
+
+Then open a .NET repository and ask: "run sql-ef-analyst, full run", or paste an EF log or an execution plan. In VS Code enable the agent skills setting (`chat.agent.skills`).
+
+Paths come from Microsoft Learn documentation and were not tested with each tool.
 
 ## Evidence it uses
 
