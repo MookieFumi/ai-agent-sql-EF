@@ -35,7 +35,7 @@ apm install MookieFumi/ai-agent-sql-ef#v0.1.0
 
 APM deploys the skills and the agent to the folders of your editor (`.github/`, `.claude/`, `.cursor/`, `.codex/`, `.gemini/`) according to `targets`. Use `--target <name>` to pick one.
 
-Each release also attaches a zip built with `apm pack --archive`, installable with `apm install ./ai-agent-sql-ef-0.1.0.zip`.
+Each release also attaches a zip built with.
 
 ## Install without APM
 
@@ -55,29 +55,33 @@ See `docs/testing-guide.md` to try it against `ef-core-pills`.
 
 ## Pipelines
 
-- `ci.yml` runs on every pull request and on `main`. Job `build` runs `scripts/validate.py` (skill names match their folders, front matter is valid, no editor-specific tool names, the agent only references existing skills). Job `pack` runs `apm pack --archive` and uploads the zip as an artifact.
-- `release.yml` runs when a `v*` tag is pushed: validates, packs and creates the GitHub Release with the zip. It can also be started by hand from the Actions tab (`Run workflow`); a manual run never creates a Release, it only validates and packs and uploads the zip as an artifact, so you can test it safely.
+- `ci.yml` runs on every pull request and on `main`. Job `build` runs `scripts/validate.py` (skill names match their folders, front matter is valid, no editor-specific tool names, the agent only references existing skills). Job `package` installs the package with APM into an empty project (`scripts/smoke-install.sh`, which fails unless every skill is deployed), builds the zip with `scripts/build-package.py` and uploads it as an artifact.
+- `release.yml` runs when a `v*` tag is pushed: validates, smoke tests the APM install, builds the zip and creates the GitHub Release with it. It can also be started by hand from the Actions tab (`Run workflow`); a manual run never creates a Release, it only validates, smoke tests, builds and uploads the zip as an artifact, so you can test it safely.
 
 Run the validation locally with `python3 scripts/validate.py`.
 
-## Releasing
+## Versioning and releasing
 
-1. Bump `version` in `apm.yml`.
-2. Tag the commit with the same version prefixed by `v` and push the tag. The workflow fails if they differ.
+The version lives in one place: `version` in `apm.yml`. It follows semantic versioning (`MAJOR.MINOR.PATCH`):
 
-The paths and the APM commands come from the documentation and have not been run yet. The release workflow has not run either.
+- PATCH: fix a rule or a typo in a skill, no change in behavior.
+- MINOR: add a skill or a rule, or extend what a skill detects.
+- MAJOR: rename or remove a skill, or change how the agent behaves in a way that breaks how people use it.
 
-## Evidence it uses
+To release:
 
-1. Code: static patterns in LINQ and SQL.
-2. Aspire telemetry: structured logs and traces of a running AppHost, read with the Aspire CLI or MCP server. The agent can propose a temporary change to enable EF command logging.
-3. EF Core logs (`Microsoft.EntityFrameworkCore.Database.Command`): commands per request and repeated statements.
-4. Execution plans you paste. The agent never connects to a database.
+1. In a pull request, bump `version` in `apm.yml` (for example `0.1.0` to `0.2.0`). The README install examples and `docs/` do not hardcode it except the examples below, update them if you want.
+2. Merge the pull request (squash).
+3. Tag the merge commit with the same version prefixed by `v` and push the tag:
 
-## Safety
+   ```bash
+   git checkout main && git pull
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
 
-Read-only by default. It edits only after you approve a diff and never commits or pushes.
+4. The `release` workflow checks that the tag matches `apm.yml`, validates, smoke tests the APM install, builds `ai-agent-sql-ef-<version>.zip` and creates the GitHub Release with that zip. If the tag and the manifest differ, it fails and nothing is published.
 
-## Status
+Consumers install a version with the tag: `apm install MookieFumi/ai-agent-sql-ef#v0.2.0`, and update with `apm update`. A tag is immutable by convention; to fix a bad release publish a new patch version instead of moving the tag.
 
-First version. It has not been tested on a real repository yet. The next step is validating it against the cases in https://github.com/MookieFumi/ef-core-pills.
+To test the release pipeline without publishing, run `release` by hand from the Actions tab: it never creates a Release.

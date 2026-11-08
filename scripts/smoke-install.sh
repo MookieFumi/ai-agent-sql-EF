@@ -18,12 +18,21 @@ git init -q .
 
 apm install "$repo" --verbose
 
-echo "--- installed files"
-find . -path ./.git -prune -o -type f -print | sort
+echo "--- deployed skills (outside apm_modules)"
+find . \( -path ./.git -o -path ./apm_modules \) -prune -o -name SKILL.md -print | sort
 
-found="$(find . -path ./.git -prune -o -name SKILL.md -print | wc -l)"
-echo "SKILL.md files: expected at least ${expected}, found ${found}"
-if [ "${found}" -lt "${expected}" ]; then
-  echo "Not every skill was installed."
-  exit 1
+# Every deployed location must contain every skill; a location is the folder that holds the skill folders.
+status=0
+for location in $(find . \( -path ./.git -o -path ./apm_modules \) -prune -o -name SKILL.md -print | sed -E 's#/[^/]+/SKILL.md$##' | sort -u); do
+  count="$(find "${location}" -maxdepth 2 -name SKILL.md | wc -l)"
+  echo "${location}: ${count} skills (expected ${expected})"
+  if [ "${count}" -ne "${expected}" ]; then
+    status=1
+  fi
+done
+
+if [ -z "$(find . \( -path ./.git -o -path ./apm_modules \) -prune -o -name SKILL.md -print)" ]; then
+  echo "No skill was deployed outside apm_modules."
+  status=1
 fi
+exit "${status}"
