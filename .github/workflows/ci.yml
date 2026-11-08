@@ -37,6 +37,17 @@ jobs:
       - name: Install APM
         run: pip install apm-cli
 
+      - name: Diagnose APM pack
+        run: |
+          apm --version
+          apm pack --help
+          apm pack --archive -o ./dist --verbose || true
+          echo "--- git status"
+          git status --short
+          echo "--- tree"
+          find . -path ./.git -prune -o -type f -newer apm.yml -print | head -50
+          ls -la dist build 2>/dev/null || true
+
       - name: Pack
         run: apm pack --archive -o ./dist
 
@@ -45,3 +56,4 @@ jobs:
         with:
           name: package
           path: dist/*.zip
+          if-no-files-found: error
