@@ -4,23 +4,26 @@ Goal: confirm the skills load and produce the expected findings in a real editor
 
 ## 1. Prepare
 
+Install the package with APM (https://github.com/microsoft/apm), `pip install apm-cli`:
+
 ```bash
 git clone https://github.com/MookieFumi/ef-core-pills
 cd ef-core-pills
+apm init            # only if the project has no apm.yml yet
+apm install MookieFumi/ai-agent-sql-ef
 ```
 
-Copy the skills of this repository (`.apm/skills/*`) into the skills folder of the editor you test:
+`apm install` takes no prompts for this package: it deploys to the targets listed in the `apm.yml` of the project (or the ones it detects, such as `.github/` or `.claude/`). To force one editor: `apm install MookieFumi/ai-agent-sql-ef --target claude` (or `copilot`). Until the first tag exists this installs `main`; afterwards use `#v0.1.0`.
 
-| Editor | Folder inside `ef-core-pills` |
-|---|---|
-| VS Code with GitHub Copilot | `.github/skills/` |
-| Claude Code | `.claude/skills/` |
+Check where it put the files and write it down (it feeds the fixes):
 
-Each skill folder must keep its name (for example `.github/skills/sql-ef-round-trips/SKILL.md`). For VS Code also copy `.apm/agents/sql-ef-analyst.agent.md` to `.github/agents/`.
+```bash
+git status --short
+```
 
-If you have the APM CLI, this replaces the copy: `apm install MookieFumi/ai-agent-sql-ef#feat/initial-agent-and-skills` (a branch ref; a tag will exist after the first release). Note which method you used.
+Fallback if APM fails or you do not want it: copy `.apm/skills/*` by hand into `.github/skills/` (VS Code) or `.claude/skills/` (Claude Code), keeping each folder name, and `.apm/agents/sql-ef-analyst.agent.md` into `.github/agents/`.
 
-VS Code: enable the agent skills setting (`chat.agent.skills`), open Copilot Chat in agent mode and check that the skills appear in the tools picker. Claude Code: run `/skills` or start a new session and check that the `sql-ef-*` skills are listed.
+VS Code: enable the agent skills setting (`chat.agent.skills`), open Copilot Chat in agent mode and check that the skills appear in the tools picker. Claude Code: run `/skills` or start a new session and check that the `sql-ef-*` skills are listed. The logic lives in the skills, so they are enough in both editors; the agent file is only an optional shortcut for VS Code.
 
 ## 2. Prompts to run
 

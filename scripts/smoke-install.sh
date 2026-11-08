@@ -21,6 +21,9 @@ apm install "$repo" --verbose
 echo "--- deployed skills (outside apm_modules)"
 find . \( -path ./.git -o -path ./apm_modules \) -prune -o -name SKILL.md -print | sort
 
+echo "--- deployed agents and other files (outside apm_modules, excluding skills)"
+find . \( -path ./.git -o -path ./apm_modules \) -prune -o -type f -not -name SKILL.md -not -path '*/references/*' -not -name apm.yml -not -name apm.lock.yaml -print | sort
+
 # Every deployed location must contain every skill; a location is the folder that holds the skill folders.
 status=0
 for location in $(find . \( -path ./.git -o -path ./apm_modules \) -prune -o -name SKILL.md -print | sed -E 's#/[^/]+/SKILL.md$##' | sort -u); do
