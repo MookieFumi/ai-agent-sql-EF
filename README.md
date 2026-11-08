@@ -1,4 +1,4 @@
-# ai-agent-sql-EF
+# ai-agent-sql-ef
 
 A GitHub Copilot custom agent for VS Code, with one skill per analysis, that finds SQL and EF Core performance problems: N+1, round trips, tracking, projections, cartesian explosion, pagination, indexes and raw SQL.
 
