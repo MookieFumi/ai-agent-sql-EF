@@ -29,11 +29,20 @@ The skills hold all the logic and follow the Agent Skills open standard, so they
 
 ## Install with APM
 
+APM installs into a scope. Pick one.
+
+**Per project (verified)**: run it inside the project you want to analyze, at the folder that holds (or will hold) its `apm.yml`. Nothing is installed anywhere else.
+
 ```bash
-apm install MookieFumi/ai-agent-sql-ef#v0.1.0
+cd my-project
+apm install MookieFumi/ai-agent-sql-ef#v0.1.0 --target copilot   # or claude
 ```
 
-APM deploys the skills and the agent to the folders of your editor (`.github/`, `.claude/`, `.cursor/`, `.codex/`, `.gemini/`) according to `targets`. Use `--target <name>` to pick one.
+- `--target` is required the first time when the project has no editor folder yet (`.github/agents`, `.claude/`, ...). Otherwise APM stops with "No harness detected". It is saved in the new `apm.yml`.
+- It creates `apm.yml`, `apm.lock.yaml` and `apm_modules/` in that folder. `copilot` puts the skills in `.agents/skills/` and the agent in `.github/agents/`; `claude` puts them in `.claude/skills/` and `.claude/agents/`.
+- Run from any other folder (for example Downloads) it installs there, not in your user folder.
+
+**For your user, all projects (not verified yet)**: `apm install -g MookieFumi/ai-agent-sql-ef#v0.1.0 --target copilot`. Per the APM documentation `-g` installs to user scope (`~/.apm/`). The documentation does not state the final folders for the Copilot agent, so check where the files land and whether your editor reads them. Results will be recorded here after testing.
 
 Each release also attaches a zip built with.
 
