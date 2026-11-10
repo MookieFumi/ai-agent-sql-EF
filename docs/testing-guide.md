@@ -16,7 +16,7 @@ apm install MookieFumi/ai-agent-sql-ef#v0.1.0 --target copilot   # or --target c
 
 `--target` is needed on the first install when the project has no editor folder yet; otherwise APM stops with "No harness detected". No prompts are shown. It creates `apm.yml`, `apm.lock.yaml` and `apm_modules/`, and deploys the skills to `.agents/skills/` (copilot) or `.claude/skills/` (claude) and the agent to `.github/agents/` or `.claude/agents/`.
 
-**B. User scope (not verified).** `apm install -g MookieFumi/ai-agent-sql-ef#v0.1.0 --target copilot` installs to user scope (`~/.apm/` per the APM docs) for every project. Record: the folders where the skills and the agent end up (`dir` the user folder for `.apm`, `.agents`, `.copilot`, `.claude`), and whether VS Code or Claude Code lists the skills in a project that has none of its own.
+**B. User scope (not verified).** `apm install -g MookieFumi/ai-agent-sql-ef#v0.1.0 --target copilot` installs to user scope (`~/.apm/` per the APM docs) for every project. Record: the folders where the skills and the agent end up (look in your user folder for `.apm`, `.agents`, `.copilot` and `.claude`), and whether VS Code or Claude Code lists the skills in a project that has none of its own.
 
 Check where it put the files and write it down (it feeds the fixes):
 
