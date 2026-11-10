@@ -4,16 +4,19 @@ Goal: confirm the skills load and produce the expected findings in a real editor
 
 ## 1. Prepare
 
-Install the package with APM (https://github.com/microsoft/apm), `pip install apm-cli`:
+Install the package with APM (https://github.com/microsoft/apm), `pip install apm-cli`. Two scopes; test the first one, then try the second and write down what happens.
+
+**A. Project scope.** Run it INSIDE `ef-core-pills`, not in another folder (APM installs into the folder where you run it):
 
 ```bash
 git clone https://github.com/MookieFumi/ef-core-pills
 cd ef-core-pills
-apm init            # only if the project has no apm.yml yet
-apm install MookieFumi/ai-agent-sql-ef
+apm install MookieFumi/ai-agent-sql-ef#v0.1.0 --target copilot   # or --target claude
 ```
 
-`apm install` takes no prompts for this package: it deploys to the targets listed in the `apm.yml` of the project (or the ones it detects, such as `.github/` or `.claude/`). To force one editor: `apm install MookieFumi/ai-agent-sql-ef --target claude` (or `copilot`). Until the first tag exists this installs `main`; afterwards use `#v0.1.0`.
+`--target` is needed on the first install when the project has no editor folder yet; otherwise APM stops with "No harness detected". No prompts are shown. It creates `apm.yml`, `apm.lock.yaml` and `apm_modules/`, and deploys the skills to `.agents/skills/` (copilot) or `.claude/skills/` (claude) and the agent to `.github/agents/` or `.claude/agents/`.
+
+**B. User scope (not verified).** `apm install -g MookieFumi/ai-agent-sql-ef#v0.1.0 --target copilot` installs to user scope (`~/.apm/` per the APM docs) for every project. Record: the folders where the skills and the agent end up (look in your user folder for `.apm`, `.agents`, `.copilot` and `.claude`), and whether VS Code or Claude Code lists the skills in a project that has none of its own.
 
 Check where it put the files and write it down (it feeds the fixes):
 
